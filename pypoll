@@ -1,0 +1,86 @@
+import csv
+
+#file to load and output
+file_to_load="C:/Users/regin/Documents/vu-nsh-data-pt-06-2020-u-c/02-Homework/03-Python/Instructions/PyPoll/Resources/election_data.csv"
+file_to_output="C:/Users/regin/Documents/vu-nsh-data-pt-06-2020-u-c/02-Homework/03-Python/Instructions/PyPoll/Resources/election_results.txt"
+
+#total vote counter
+total_votes=0
+
+#candidate options and vote counters
+candidate_options=[]
+candidate_votes={}
+
+#Winning candidate and winning count tracker
+winning_candidate=""
+winning_count=0
+
+#Read csv and covert into dictionaries
+with open(file_to_load) as election_data:
+    reader=csv.DictReader(election_data)
+    
+    #for each row
+    for row in reader:
+        
+        #Add to total vote counts
+        total_votes=total_votes+1
+        
+        #extract candidate name for each row
+        candidate_name=row["Candidate"]
+        
+        #if the candidate does not match an existing candidate
+        if candidate_name not in candidate_options:
+            
+            #add to the list of candidates running
+            candidate_options.append(candidate_name)
+            
+            #and begin that candidates vote count
+            candidate_votes[candidate_name]=0
+            
+            #then add a vote to that candidates count
+            candidate_votes[candidate_name]= candidate_votes[candidate_name]+1 
+            
+#print the results and export to the data file
+with open(file_to_output, "w") as txt_file:
+    
+    #print the final vote count
+    election_results= (
+        f"\n\nELection Results\n"
+        f"-----------------------\n"
+        f"Total Votes:{total_votes}\n"
+        f"---------------------------\n"
+    )
+    print(election_results)
+    
+    #save the final vote count to the text file
+    txt_file.write(election_results)
+    
+    #determine candidate in by looping through the counts
+    for candidate in candidate_votes:
+        
+        #retrieve  the vote count and percentage
+        votes=candidate_votes.get(candidate)
+        vote_percentage=float(votes)/float(total_votes)*100
+        
+        #Determine the winning vote count
+        if(votes>winning_count):
+            winning_count=votes
+            winning_candidate=candidate
+            
+        #print each candidates voter count and percentage
+        voter_output=f"{candidate}:{vote_percentage:.3f}% ({votes})\n"
+        print(voter_output)
+            
+        #Save each candidates voter count and percentage to txt file
+        txt_file.write(voter_output)
+        
+        #print winning candidate
+        winning_candidate_summary=(
+            f"-------------------------\n"
+            f"Winner: {winning_candidate}\n"
+            f"-------------------------\n"
+        )
+    print(winning_candidate_summary)
+        
+    #save the winning candidates name to the txt file
+    txt_file.write(winning_candidate_summary)
